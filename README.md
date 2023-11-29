@@ -26,15 +26,6 @@ spring:
   thymeleaf:
     cache: false
 
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/bongbong?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: Admin123!
-  thymeleaf:
-    cache: false
-
 jpa:
   database: mysql
   open-in-view: false
