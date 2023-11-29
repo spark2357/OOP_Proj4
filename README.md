@@ -10,6 +10,7 @@ IDE가 알아서 실행하는 부분 잡아주면 단축키 등으로 실행가�
 브라우저에서 **localhost:8080**으로 확인
 
 ### database 설정 바꾸는 법
+#### src > main > resources 에 application.yml 파일 생성
 #### application.yml
 ```java
 spring:
@@ -24,4 +25,24 @@ spring:
     password: {비밀번호}
   thymeleaf:
     cache: false
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/bongbong?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: Admin123!
+  thymeleaf:
+    cache: false
+
+jpa:
+  database: mysql
+  open-in-view: false
+  show-sql: true
+  hibernate:
+    ddl-auto: update
+  properties:
+    hibernate:
+      show_sql: true
+      format_sql: true
 ```
