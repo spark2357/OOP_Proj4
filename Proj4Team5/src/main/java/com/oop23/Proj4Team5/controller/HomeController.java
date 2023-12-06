@@ -1,13 +1,18 @@
 package com.oop23.Proj4Team5.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.oop23.Proj4Team5.entity.Notice;
+import com.oop23.Proj4Team5.repository.NoticeRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
 public class HomeController {
-
-    @GetMapping("/")
-    public String index() {
-        return "index";
+    private final NoticeRepository noticeRepository;
+    @GetMapping(value = "/api/list")
+    public List<Notice> home() {
+        return noticeRepository.findAll();
     }
 }
