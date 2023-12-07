@@ -15,7 +15,7 @@ import com.oop23.Proj4Team5.entity.Notice;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class NoticeController {
     private final NoticeRepository noticeRepository;
     private final ScheduleRepository scheduleRepository;

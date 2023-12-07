@@ -12,7 +12,7 @@ import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class HomeController {
     private final NoticeRepository noticeRepository;
     private final ScheduleRepository scheduleRepository;
