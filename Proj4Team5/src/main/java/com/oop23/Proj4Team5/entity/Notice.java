@@ -1,6 +1,6 @@
 package com.oop23.Proj4Team5.entity;
 
-import com.oop23.Proj4Team5.entity.request.NoticeCreationRequest;
+import com.oop23.Proj4Team5.entity.request.NoticeInputRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,19 +35,26 @@ public class Notice {
     @Enumerated(EnumType.STRING)
     private TagStatus tagName;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "schedule_id", referencedColumnName = "id")
     private Schedule schedule;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private Account user;
 
-    public void update(NoticeCreationRequest input) {
+    public void update(NoticeInputRequest input) {
         this.title = input.getTitle();
         this.contents = input.getContents();
         this.isCalendar = input.getIsCalendar();
         this.tagName = input.getTagName();
+    }
 
+    public void addSchedule(Schedule schedule){
+        this.schedule = schedule;
+    }
+
+    public void deleteSchedule(){
+        this.schedule = null;
     }
 }

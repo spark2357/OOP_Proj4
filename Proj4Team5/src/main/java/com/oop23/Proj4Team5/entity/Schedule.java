@@ -1,12 +1,15 @@
 package com.oop23.Proj4Team5.entity;
 
+import com.oop23.Proj4Team5.entity.request.NoticeInputRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity(name="schedule")
+@Builder
+@AllArgsConstructor
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,4 +20,9 @@ public class Schedule {
 
     @Column(nullable = false)
     private String time;
+
+    public void update(NoticeInputRequest input){
+        this.memo = input.getMemo();
+        this.time = input.getTime();
+    }
 }
