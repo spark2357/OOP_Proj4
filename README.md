@@ -28,7 +28,7 @@ spring:
 
 jpa:
   database: mysql
-  open-in-view: true
+  open-in-view: false
   show-sql: true
   hibernate:
     ddl-auto: update
