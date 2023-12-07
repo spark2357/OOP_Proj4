@@ -12,6 +12,7 @@ import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class HomeController {
     private final NoticeRepository noticeRepository;
     private final ScheduleRepository scheduleRepository;
