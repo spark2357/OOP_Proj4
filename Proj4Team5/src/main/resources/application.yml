@@ -6,6 +6,10 @@ spring:
     password: "Rorwlvm!"
   thymeleaf:
     cache: false
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
   jpa:
     database: mysql
