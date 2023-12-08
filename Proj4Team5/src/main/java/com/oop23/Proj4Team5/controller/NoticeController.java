@@ -1,26 +1,43 @@
 package com.oop23.Proj4Team5.controller;
 
 
+import com.oop23.Proj4Team5.entity.FileEntity;
 import com.oop23.Proj4Team5.entity.Schedule;
 import com.oop23.Proj4Team5.entity.request.NoticeInputRequest;
 import com.oop23.Proj4Team5.exception.NoticeNotFoundException;
+import com.oop23.Proj4Team5.repository.FileRepository;
 import com.oop23.Proj4Team5.repository.NoticeRepository;
 import com.oop23.Proj4Team5.repository.ScheduleRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.oop23.Proj4Team5.entity.Notice;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 public class NoticeController {
     private final NoticeRepository noticeRepository;
     private final ScheduleRepository scheduleRepository;
+    private final FileRepository fileRepository;
+
+    private static final String path = "C:/Users/psbte/Desktop/";
 
     @PostMapping("/api/notice")
-    public Notice addNotice(@RequestBody NoticeInputRequest input) {
+    public Notice addNotice(@ModelAttribute NoticeInputRequest input) {
+        System.out.println(input);
         Notice newNotice = Notice.builder()
                 .title(input.getTitle())
                 .contents(input.getContents())
@@ -37,10 +54,14 @@ public class NoticeController {
             scheduleRepository.save(newSchedule);
             newNotice.addSchedule(newSchedule);
         }
-        // user 연결
-
-
         noticeRepository.save(newNotice);
+
+        if(!input.getFiles().isEmpty()){
+            List<Long> idList = uploadFile(input.getFiles(), newNotice);
+        }
+        // id contents에 넣기
+
+        // user 연결
 
         return newNotice;
     }
@@ -95,5 +116,64 @@ public class NoticeController {
                 .orElseThrow(() -> new NoticeNotFoundException("존재하지 않는 글입니다."));
 
         noticeRepository.delete(notice);
+    }
+
+    public List<Long> uploadFile(ArrayList<MultipartFile> files, Notice notice){
+        String savedFileName = "";
+        // 1. 파일 저장 경로 설정 : 실제 서비스되는 위치(프로젝트 외부에 저장)
+        String uploadPath = path;
+        // 여러 개의 원본 파일을 저장할 리스트 생성
+        ArrayList<String> originalFileNameList = new ArrayList<String>();
+
+        List<Long> idList = new ArrayList<Long>();
+
+        for(MultipartFile file : files) {
+            // 2. 원본 파일 이름 알아오기
+            String originalFileName = file.getOriginalFilename();
+            // 3. 파일 이름을 리스트에 추가
+            originalFileNameList.add(originalFileName);
+            // 4. 파일 이름 중복되지 않게 이름 변경(서버에 저장할 이름) UUID 사용
+            UUID uuid = UUID.randomUUID();
+            savedFileName = uuid.toString() + "_" + originalFileName;
+            // 5. 파일 생성
+            File file1 = new File(uploadPath + savedFileName);
+            System.out.println(uploadPath + savedFileName);
+            // 6. 서버로 전송
+            try {
+                file.transferTo(file1);
+
+                FileEntity newFile = FileEntity.builder()
+                        .savedName(savedFileName)
+                        .uploadPath(uploadPath)
+                        .notice(notice)
+                        .build();
+
+                fileRepository.save(newFile);
+                idList.add(newFile.getId());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return idList;
+    }
+
+    @RequestMapping("/download/{id}")
+    public void fileDownload(@PathVariable Long id, HttpServletResponse response) throws IOException {
+        FileEntity downloadFile = fileRepository.findById(id)
+                .orElseThrow(() -> new NoticeNotFoundException("존재하지 않는 파일입니다."));
+        String file = downloadFile.getSavedName();
+        File f = new File(path, file);
+        // file 다운로드 설정
+        response.setContentType("application/download");
+        response.setContentLength((int)f.length());
+        response.setHeader("Content-disposition", "attachment;filename=\"" + file + "\"");
+        // response 객체를 통해서 서버로부터 파일 다운로드
+        OutputStream os = response.getOutputStream();
+        // 파일 입력 객체 생성
+        FileInputStream fis = new FileInputStream(f);
+        FileCopyUtils.copy(fis, os);
+        fis.close();
+        os.close();
     }
 }
