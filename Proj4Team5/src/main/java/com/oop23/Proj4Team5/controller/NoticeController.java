@@ -56,8 +56,10 @@ public class NoticeController {
         }
         noticeRepository.save(newNotice);
 
-        if(!input.getFiles().isEmpty()){
-            List<Long> idList = uploadFile(input.getFiles(), newNotice);
+        if(input.getFiles() != null){
+            if(!input.getFiles().isEmpty()) {
+                List<Long> idList = uploadFile(input.getFiles(), newNotice);
+            }
         }
         // id contents에 넣기
 
