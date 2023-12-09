@@ -18,9 +18,8 @@ public class FileEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "noticeId", referencedColumnName = "noticeId")
-    private Notice notice;
+    @Column(nullable = false)
+    private Long noticeId;
 
     @Column(nullable = false)
     private String savedName;
@@ -28,7 +27,6 @@ public class FileEntity {
     @Column(nullable = false)
     private String uploadPath;
 
-    public void addNotice(Notice notice){
-        this.notice = notice;
-    }
+    @Column(nullable = false)
+    private String originalName;
 }

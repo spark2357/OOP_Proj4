@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,7 +59,7 @@ public class NoticeController {
 
         if(input.getFiles() != null){
             if(!input.getFiles().isEmpty()) {
-                List<Long> idList = uploadFile(input.getFiles(), newNotice);
+                List<Long> idList = uploadFile(input.getFiles(), newNotice.getNoticeId());
             }
         }
         // id contents에 넣기
@@ -74,6 +75,19 @@ public class NoticeController {
                 .orElseThrow(() -> new NoticeNotFoundException("존재하지 않는 글입니다."));
 
         return notice;
+    }
+
+    @GetMapping("api/notice/file/{id}")
+    public HashMap<String, Long> getFiles(@PathVariable Long id){
+        List<FileEntity> all = fileRepository.findAllByNoticeId(id);
+
+        HashMap<String, Long> response = new HashMap<>();
+
+        for(FileEntity e : all){
+            response.put(e.getOriginalName(), e.getId());
+        }
+
+        return response;
     }
 
     @PutMapping("/api/notice/{id}")
@@ -120,7 +134,7 @@ public class NoticeController {
         noticeRepository.delete(notice);
     }
 
-    public List<Long> uploadFile(ArrayList<MultipartFile> files, Notice notice){
+    public List<Long> uploadFile(ArrayList<MultipartFile> files, Long noticeId){
         String savedFileName = "";
         // 1. 파일 저장 경로 설정 : 실제 서비스되는 위치(프로젝트 외부에 저장)
         String uploadPath = path;
@@ -147,7 +161,8 @@ public class NoticeController {
                 FileEntity newFile = FileEntity.builder()
                         .savedName(savedFileName)
                         .uploadPath(uploadPath)
-                        .notice(notice)
+                        .noticeId(noticeId)
+                        .originalName(originalFileName)
                         .build();
 
                 fileRepository.save(newFile);
