@@ -1,6 +1,7 @@
 package com.oop23.Proj4Team5.entity;
 
 import com.oop23.Proj4Team5.entity.request.NoticeInputRequest;
+import com.oop23.Proj4Team5.entity.request.NoticeUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,7 +40,7 @@ public class Notice {
     @JoinColumn(name = "schedule_id", referencedColumnName = "id")
     private Schedule schedule;
 
-    public void update(NoticeInputRequest input) {
+    public void update(NoticeUpdateRequest input) {
         this.title = input.getTitle();
         this.contents = input.getContents();
         this.isCalendar = input.getIsCalendar();
