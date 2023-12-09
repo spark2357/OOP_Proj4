@@ -4,6 +4,7 @@ package com.oop23.Proj4Team5.controller;
 import com.oop23.Proj4Team5.entity.FileEntity;
 import com.oop23.Proj4Team5.entity.Schedule;
 import com.oop23.Proj4Team5.entity.request.NoticeInputRequest;
+import com.oop23.Proj4Team5.entity.request.NoticeUpdateRequest;
 import com.oop23.Proj4Team5.exception.NoticeNotFoundException;
 import com.oop23.Proj4Team5.repository.FileRepository;
 import com.oop23.Proj4Team5.repository.NoticeRepository;
@@ -62,9 +63,6 @@ public class NoticeController {
                 List<Long> idList = uploadFile(input.getFiles(), newNotice.getNoticeId());
             }
         }
-        // id contents에 넣기
-
-        // user 연결
 
         return newNotice;
     }
@@ -90,8 +88,9 @@ public class NoticeController {
         return response;
     }
 
+
     @PutMapping("/api/notice/{id}")
-    public void updateNotice(@PathVariable Long id, @ModelAttribute NoticeInputRequest input){
+    public void updateNotice(@PathVariable Long id, @ModelAttribute NoticeUpdateRequest input){
         Notice notice = noticeRepository.findById(id)
                         .orElseThrow(() -> new NoticeNotFoundException("존재하지 않는 글입니다."));
 
@@ -119,7 +118,7 @@ public class NoticeController {
 
         notice.update(input);
         noticeRepository.save(notice);
-        deleteFile(notice.getNoticeId());
+        deleteFile(notice.getNoticeId(), input.getChecked());
         if(input.getFiles() != null){
             if(!input.getFiles().isEmpty()) {
                 List<Long> idList = uploadFile(input.getFiles(), notice.getNoticeId());
@@ -139,8 +138,8 @@ public class NoticeController {
                 .orElseThrow(() -> new NoticeNotFoundException("존재하지 않는 글입니다."));
 
         noticeRepository.delete(notice);
-
-        deleteFile(id);
+        List<Long> left = new ArrayList<>();
+        deleteFile(id, left);
     }
 
     public List<Long> uploadFile(ArrayList<MultipartFile> files, Long noticeId){
@@ -203,11 +202,12 @@ public class NoticeController {
         os.close();
     }
 
-    public void deleteFile(Long noticeId){
+    public void deleteFile(Long noticeId, List<Long> left){
         List<FileEntity> all = fileRepository.findAllByNoticeId(noticeId);
 
         for(FileEntity e : all){
-            fileRepository.delete(e);
+            if(!left.contains(e.getId()))
+                fileRepository.delete(e);
         }
     }
 }
