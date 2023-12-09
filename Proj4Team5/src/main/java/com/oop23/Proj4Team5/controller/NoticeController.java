@@ -119,7 +119,7 @@ public class NoticeController {
 
         notice.update(input);
         noticeRepository.save(notice);
-        deleteFile(input.getFiles(), notice.getNoticeId());
+        deleteFile(notice.getNoticeId());
         if(input.getFiles() != null){
             if(!input.getFiles().isEmpty()) {
                 List<Long> idList = uploadFile(input.getFiles(), notice.getNoticeId());
@@ -139,6 +139,8 @@ public class NoticeController {
                 .orElseThrow(() -> new NoticeNotFoundException("존재하지 않는 글입니다."));
 
         noticeRepository.delete(notice);
+
+        deleteFile(id);
     }
 
     public List<Long> uploadFile(ArrayList<MultipartFile> files, Long noticeId){
@@ -201,7 +203,7 @@ public class NoticeController {
         os.close();
     }
 
-    public void deleteFile(ArrayList<MultipartFile> files, Long noticeId){
+    public void deleteFile(Long noticeId){
         List<FileEntity> all = fileRepository.findAllByNoticeId(noticeId);
 
         for(FileEntity e : all){
