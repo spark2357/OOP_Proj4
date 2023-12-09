@@ -34,7 +34,7 @@ public class NoticeController {
     private final ScheduleRepository scheduleRepository;
     private final FileRepository fileRepository;
 
-    private static final String path = "C:/Users/psbte/Desktop/";
+    private static final String path = "/root/Upload/Files/";
 
     @PostMapping("/api/notice")
     public Notice addNotice(@ModelAttribute NoticeInputRequest input) {
