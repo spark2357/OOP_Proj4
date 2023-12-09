@@ -39,10 +39,6 @@ public class Notice {
     @JoinColumn(name = "schedule_id", referencedColumnName = "id")
     private Schedule schedule;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private Account user;
-
     public void update(NoticeInputRequest input) {
         this.title = input.getTitle();
         this.contents = input.getContents();
