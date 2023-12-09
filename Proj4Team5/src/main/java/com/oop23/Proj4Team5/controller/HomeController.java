@@ -16,7 +16,7 @@ public class HomeController {
     private final NoticeRepository noticeRepository;
     private final ScheduleRepository scheduleRepository;
     @GetMapping(value = "/api/schedule")
-    public List<List<Notice>> getMainCalendar() {
+    public HashMap<String, List<Notice>> getMainCalendar() {
         List<Notice> all = noticeRepository.findAll();
         // 스케줄 별로 정렬.
         List<Schedule> scheduleAll = scheduleRepository.findAll();
@@ -25,11 +25,13 @@ public class HomeController {
             timeList.add(e.getTime());
         }
         List<List<Notice>> schedule = new ArrayList<>();
+
+        HashMap<String, List<Notice>> response = new HashMap<>();
         for(String e : timeList){
-            schedule.add(noticeRepository.findByScheduleTime(e));
+            response.put(e, noticeRepository.findByScheduleTime(e));
         }
 
-        return schedule;
+        return response;
     }
 
     @GetMapping(value = "/api/notice")
