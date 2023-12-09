@@ -91,7 +91,7 @@ public class NoticeController {
     }
 
     @PutMapping("/api/notice/{id}")
-    public void updateNotice(@PathVariable Long id, @RequestBody NoticeInputRequest input){
+    public void updateNotice(@PathVariable Long id, @ModelAttribute NoticeInputRequest input){
         Notice notice = noticeRepository.findById(id)
                         .orElseThrow(() -> new NoticeNotFoundException("존재하지 않는 글입니다."));
 
@@ -119,6 +119,13 @@ public class NoticeController {
 
         notice.update(input);
         noticeRepository.save(notice);
+        deleteFile(input.getFiles(), notice.getNoticeId());
+        if(input.getFiles() != null){
+            if(!input.getFiles().isEmpty()) {
+                List<Long> idList = uploadFile(input.getFiles(), notice.getNoticeId());
+            }
+        }
+
     }
 
     @ExceptionHandler(NoticeNotFoundException.class)
@@ -192,5 +199,13 @@ public class NoticeController {
         FileCopyUtils.copy(fis, os);
         fis.close();
         os.close();
+    }
+
+    public void deleteFile(ArrayList<MultipartFile> files, Long noticeId){
+        List<FileEntity> all = fileRepository.findAllByNoticeId(noticeId);
+
+        for(FileEntity e : all){
+            fileRepository.delete(e);
+        }
     }
 }
